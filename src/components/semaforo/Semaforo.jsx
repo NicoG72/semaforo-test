@@ -37,6 +37,7 @@ const Semaforo = () => {
     }
   };
 
+  //funcion que actualiza los index para el cambio de luces
   const changeLights = () => {
     const nextIndex = (indexLuz + 1) % luces.length;
 
@@ -49,10 +50,6 @@ const Semaforo = () => {
 
     setIndexLuz(nextIndex);
   };
-
-  // useEffect(() => {
-  //   changeLights();
-  // }, []);
 
   useEffect(() => {
     if (indexLuz < 0) {
