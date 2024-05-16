@@ -27,7 +27,9 @@ const Semaforo = () => {
   ]);
   const [positionCar, setPositionCar] = useState(0);
   const [indexLight, setIndexLight] = useState(0);
+  const [velocity, setVelocity] = useState(1);
   const [clicked, setClicked] = useState(false);
+  const [finishGame, setFinishGame] = useState(false);
 
   //funciones
 
@@ -35,6 +37,7 @@ const Semaforo = () => {
   const resetSemaforo = () => {
     setPositionCar(100);
     setIndexLight(-1);
+    setFinishGame(true);
     setLights([
       {
         colorOn: "#FF0000",
@@ -61,10 +64,9 @@ const Semaforo = () => {
   };
   //funcion que actualiza posicion del auto
   const changePostion = () => {
-    let position = positionCar + 15;
+    let position = positionCar + Number(velocity);
     return setPositionCar(position);
   };
-
   //funcion que actualiza el encendido y apagado de las luces segun el index
   const validateIndex = () => {
     const currentIndex = indexLight;
@@ -143,11 +145,45 @@ const Semaforo = () => {
         return () => clearTimeout(timer);
       }
     }
+    console.log(positionCar);
   }, [clicked, positionCar]);
+
+  //Cambio de velocidad
+
+  const addVelocity = () => {
+    setVelocity((prevVelocity) => prevVelocity + 1);
+  };
+  const lessVelocity = () => {
+    if (velocity > 1) {
+      setVelocity((prevVelocity) => prevVelocity - 1);
+    } else return;
+  };
+
+  const onChangeVelocity = (e) => {
+    setVelocity(e.target.value);
+  };
+
+  const onBlurVelocity = () => {
+    setVelocity(velocity === "" ? 0 : Number(velocity));
+  };
+
+  //funcion de reset Game
+
+  const resetGame = () => {
+    if (finishGame) {
+      setTimeout(() => {
+        setFinishGame(false);
+        setClicked(false);
+        setPositionCar(0);
+        setIndexLight(0);
+        setVelocity(1);
+      }, 3000);
+    }
+  };
 
   return (
     <>
-      <div className="">
+      <div className={`${Styles.containerTrafficLigth}`}>
         <div className={`${Styles.semaforoContainer}`}>
           {ligths.map((light, i) => (
             <div
@@ -161,10 +197,49 @@ const Semaforo = () => {
             ></div>
           ))}
         </div>
-        {clicked && positionCar < 100 && (
-          <p>el click se desactivara en 5 segundos</p>
-        )}
+        <div className="">
+          <h2>Tablero de control de velocidad</h2>
+          <div className={`${Styles.containerVelocityBoard}`}>
+            <div className="">
+              <p className={`${Styles.labelTt}`}>Current velocity</p>
+              <input
+                type="number"
+                className={`${Styles.inputVelocity}`}
+                value={velocity}
+                onChange={onChangeVelocity}
+                onBlur={onBlurVelocity}
+              />
+            </div>
+            <div className="">
+              <button
+                className={`${Styles.btnVelocityLess}`}
+                onClick={() => lessVelocity()}
+              >
+                -
+              </button>
+              <button
+                className={`${Styles.btnVelocityMore}`}
+                onClick={() => addVelocity()}
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <div className="">
+            {finishGame && (
+              <button
+                className={`${Styles.btnReset}`}
+                onClick={() => resetGame()}
+              >
+                Reset
+              </button>
+            )}
+          </div>
+        </div>
       </div>
+      {clicked && positionCar < 100 && !finishGame && (
+        <p>el click se desactivara en 5 segundos</p>
+      )}
       <div className="">
         <div className="">
           <div className={`${Styles.street}`}>
